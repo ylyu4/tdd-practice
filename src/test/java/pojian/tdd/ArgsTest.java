@@ -9,6 +9,15 @@ public class ArgsTest {
 
     //-l -p 8080 -d /usr/logs
 
+    // sad path:
+    // TODO: -bool -l t / -l t f
+    // TODO: - int -p/ -p 8080 8081
+    // TODO: - string -d/ -d /usr/logs /usr/vars
+    // default value:
+    // TODO: - bool : false
+    // TODO: -int :0
+    // TODO: - string ""
+
     @Test
     void should_set_boolean_option_to_true_if_flag_present() {
         BooleanOption option = Args.parse(BooleanOption.class, "-l");
