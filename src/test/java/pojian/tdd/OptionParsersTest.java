@@ -10,11 +10,11 @@ import java.lang.annotation.Annotation;
 import java.util.function.Function;
 
 import static java.util.Arrays.asList;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static pojian.tdd.OptionParsersTest.BooleanParserTest.option;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class OptionParsersTest {
@@ -98,22 +98,48 @@ public class OptionParsersTest {
         public void should_set_value_to_true_if_option_not_present() {
             assertTrue(OptionParsers.bool().parse(asList("-l"), option("l")));
         }
+    }
 
 
-
-        static Option option(String value) {
-            return new Option() {
-
-                @Override
-                public Class<? extends Annotation> annotationType() {
-                    return Option.class;
-                }
-
-                @Override
-                public String value() {
-                    return value;
-                }
-            };
+    @Nested
+    class ListOptionParser {
+        //TODO: -g "this" "is" {"this", is"}
+        @Test
+        public void should_parse_list_value() {
+            assertArrayEquals(new String[]{"this", "is"}, OptionParsers.list(String[]::new, String::valueOf).parse(asList("-g", "this", "is"), option("g")));
         }
+        // TODO: default value []
+        @Test
+        public void should_use_empty_array_as_Default_value() {
+            String[] value = OptionParsers.list(String[]::new, String::valueOf).parse(asList(), option("g"));
+            assertEquals(0, value.length);
+        }
+        // TODO: -d a throw exception
+        @Test
+        public void should_throw_exception_if_value_parser_cant_parse_value() {
+            Function<String, String> parser = (it) -> {
+                throw new RuntimeException();
+            };
+            IllegalValueException e = assertThrows(IllegalValueException.class, () -> OptionParsers.list(String[]::new, parser).parse(asList("-g", "this", "is"), option("g")));
+            assertEquals("g", e.getOption());
+            assertEquals("this", e.getValue());
+        }
+
+
+    }
+
+    static Option option(String value) {
+        return new Option() {
+
+            @Override
+            public Class<? extends Annotation> annotationType() {
+                return Option.class;
+            }
+
+            @Override
+            public String value() {
+                return value;
+            }
+        };
     }
 }
