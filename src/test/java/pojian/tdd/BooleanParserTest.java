@@ -8,6 +8,7 @@ import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BooleanParserTest {
 
@@ -27,9 +28,14 @@ public class BooleanParserTest {
         assertEquals("l", e.getOption());
     }
 
-    @Test
+    @Test //default value
     public void should_set_default_value_to_false_if_option_not_present() {
         assertFalse(new BooleanParser().parse(asList(), option("l")));
+    }
+
+    @Test //happy path
+    public void should_set_value_to_true_if_option_not_present() {
+        assertTrue(new BooleanParser().parse(asList("-l"), option("l")));
     }
 
 
