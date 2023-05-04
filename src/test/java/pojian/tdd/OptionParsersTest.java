@@ -125,6 +125,11 @@ public class OptionParsersTest {
             assertEquals("this", e.getValue());
         }
 
+        @Test
+        public void should_not_treat_negative_int_as_flag() {
+           assertArrayEquals(new Integer[]{-1, -2}, OptionParsers.list(Integer[]::new, Integer::parseInt).parse(asList("-g", "-1", "-2"), option("g")));
+        }
+
 
     }
 

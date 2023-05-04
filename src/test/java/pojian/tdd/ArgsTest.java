@@ -1,6 +1,8 @@
 package pojian.tdd;
 
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -38,5 +40,18 @@ public class ArgsTest {
 
     static record MultiOptions(@Option("l")boolean logging, @Option("p")int port, @Option("d")String directory){}
 
+
+    @Test
+    public void should_example_2() {
+        ListOptions options = Args.parse(ListOptions.class,"-g", "this", "is", "a", "list", "-d", "1", "2", "-3", "5");
+
+        assertArrayEquals(new String[]{"this", "is", "a", "list"}, options.group());
+        assertArrayEquals(new Integer[]{1, 2, -3, 5}, options.decimals());
+    }
+
+
+    static record ListOptions(@Option("g") String[] group, @Option("d") Integer[] decimals) {
+
+    }
 
 }
