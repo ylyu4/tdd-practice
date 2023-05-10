@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.InOrder;
 
 
 import java.lang.annotation.Annotation;
@@ -13,9 +14,12 @@ import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 public class OptionParsersTest {
 
@@ -53,10 +57,9 @@ public class OptionParsersTest {
 
         @Test //happy path
         public void should_parse_value_if_flag_present() {
-            Object parsed = new Object();
-            Function<String, Object> parse = (it) -> parsed;
-            Object whatever = new Object();
-            assertSame(parsed, OptionParsers.unary(whatever, parse).parse(asList("-p", "8080"), option("p")));
+            Function parser = mock(Function.class);
+            OptionParsers.unary(any(), parser).parse(asList("-p", "8080"), option("p"));
+            verify(parser).apply("8080");
         }
 
         @Test
@@ -116,7 +119,14 @@ public class OptionParsersTest {
         //TODO: -g "this" "is" {"this", is"}
         @Test
         public void should_parse_list_value() {
-            assertArrayEquals(new String[]{"this", "is"}, OptionParsers.list(String[]::new, String::valueOf).parse(asList("-g", "this", "is"), option("g")));
+            Function parser = mock(Function.class);
+
+            OptionParsers.list(String[]::new, parser).parse(asList("-g", "this", "is"), option("g"));
+
+            InOrder order = inOrder(parser, parser);
+
+            order.verify(parser).apply("this");
+            order.verify(parser).apply("is");
         }
         // TODO: default value []
         @Test
