@@ -91,7 +91,17 @@ public class OptionParsersTest {
 
         @Test //default value
         public void should_set_default_value_to_false_if_option_not_present() {
-            assertFalse(OptionParsers.bool().parse(asList(), option("l")));
+            // setup
+            OptionParser<Boolean> parser = OptionParsers.bool();
+            Boolean result;
+
+            // exercise
+            result = parser.parse(asList(), option("l"));
+
+            // verify
+            assertFalse(result);
+
+            // teardown
         }
 
         @Test //happy path

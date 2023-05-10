@@ -22,20 +22,40 @@ public class ArgsTest {
 
     @Test
     void should_parse_multi_options_as_option_value() {
-        MultiOptions options = Args.parse(MultiOptions.class, "-l", "-p", "8080", "-d", "/usr/logs");
 
+        //SUT Args.parse
+
+
+        //before
+        MultiOptions options;
+
+        //exercise
+        options = Args.parse(MultiOptions.class, "-l", "-p", "8080", "-d", "/usr/logs");
+
+
+        //verify
         assertTrue(options.logging());
         assertEquals(8080, options.port());
         assertEquals("/usr/logs", options.directory());
+
+        //teardown
     }
 
     @Test
     public void should_throw_illegal_option_if_annotation_not_present() {
-        IllegalOptionException e = assertThrows(IllegalOptionException.class, () -> Args.parse(OptionWithoutAnnotation.class,"-l", "-p", "8080", "-d", "/usr/logs"));
 
+        // before
+        IllegalOptionException e;
+
+        e = /*verify*/ assertThrows(IllegalOptionException.class, () -> /*exercise*/ Args.parse(OptionWithoutAnnotation.class,"-l", "-p", "8080", "-d", "/usr/logs"));
+
+        // verify
         assertEquals("port", e.getParameter());
+
+        // teardown
     }
 
+    // setup
     static record OptionWithoutAnnotation(@Option("l")boolean logging, int port, @Option("d")String directory){}
 
     static record MultiOptions(@Option("l")boolean logging, @Option("p")int port, @Option("d")String directory){}
